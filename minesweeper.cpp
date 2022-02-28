@@ -3,6 +3,7 @@
 #include <graphics.h>
 #include <time.h>
 
+
 bool game[15][15];
 int map[15][15];
 bool pressedflag[15][15];
@@ -49,6 +50,8 @@ int main()
 {
     srand((unsigned)time(NULL));    //随机数种子
     initgraph(360,460);
+    HWND hwnd = GetHWnd();
+    SetWindowText(hwnd,_T("123"));
     setbkcolor(RGB(198,198,198));
     cleardevice();
     initgame(); //初始化界面
@@ -69,15 +72,19 @@ int main()
     loadimage(&number[6], _T("src\\6.png"));
     loadimage(&number[7], _T("src\\7.png"));
     loadimage(&number[8], _T("src\\8.png"));
+    int lastcheck = 0;
     while (1) {
         ExMessage nowcheck;
         nowcheck = getmessage(EM_MOUSE);
+        
+        
         if (nowcheck.x >= 150 && nowcheck.x <= 210 && nowcheck.y >= 20 && nowcheck.y <= 80&&nowcheck.lbutton) {
             initgame();
             initmap();
         }
         if (life == 0) continue;
-        if (nowcheck.x > 18 && nowcheck.x < 342 && nowcheck.y>118 && nowcheck.y < 442) {
+        if (lastcheck==0&&nowcheck.x > 18 && nowcheck.x < 342 && nowcheck.y>118 && nowcheck.y < 442) {
+            lastcheck = 1;
             int x = (nowcheck.x - 18) / 36 + 1;
             int y = (nowcheck.y - 118) / 36 + 1;
             if (nowcheck.rbutton&&!(visited[x][y])) {
@@ -96,7 +103,7 @@ int main()
                             }
                         }
                     }
-                    life = 0;
+                    life = 0 ;
                 }
                 else {
                     std::queue<std::pair<int, int>>q;
@@ -115,6 +122,9 @@ int main()
                     }
                 }
             }
+        }
+        if (lastcheck&&!nowcheck.lbutton&&!nowcheck.rbutton) {
+            lastcheck = 0;
         }
         int temp = 1;
         for (int i = 1; i <= 9; i++) {
